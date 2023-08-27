@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import { books, posts, users } from './fakeDb.js';
 
 const resolvers = {
@@ -11,6 +12,17 @@ const resolvers = {
 
   User: {
     posts: (user) => posts.filter((post) => post.userId == user.id),
+  },
+
+  Mutation: {
+    addUser: (_, { newUser }) => {
+      const id = randomBytes(1).toString('hex');
+      users.push({
+        id,
+        ...newUser,
+      });
+      return users.find((user) => user.id == id);
+    },
   },
 };
 

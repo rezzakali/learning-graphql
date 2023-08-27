@@ -20,6 +20,13 @@ const typeDefs = `#graphql
         posts:[Post]
     }
 
+    input userInput {
+        name:String!
+        username:String!
+        email:String!
+        phone:String!
+    }
+
     type Query {
         books:[Book]
     }
@@ -38,6 +45,10 @@ const typeDefs = `#graphql
 
     type Query {
         user(email:String!):User
+    }
+
+    type Mutation {
+        addUser(newUser:userInput):User
     }
 `;
 

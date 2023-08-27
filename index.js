@@ -1,7 +1,19 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-import resolvers from './resolvers.js';
-import typeDefs from './schema.js';
+import colors from 'colors';
+import dotenv from 'dotenv';
+import connectionToDb from './config/dbConnection.js';
+import resolvers from './resolvers/resolvers.js';
+import typeDefs from './schema/graphqlSchema.js';
+
+// environment config using dotenv package
+dotenv.config();
+
+// enable colors
+colors.enable();
+
+// call db connection function
+connectionToDb();
 
 // create an instance of ApolloServer
 const server = new ApolloServer({
@@ -10,7 +22,7 @@ const server = new ApolloServer({
 });
 
 const { url } = await startStandaloneServer(server, {
-  listen: { port: 4000 },
+  listen: { port: process.env.PORT || 4000 },
 });
 
-console.log(`🚀  Server ready at: ${url}`);
+console.log(`🚀  your server is running successfully on : ${url}`);

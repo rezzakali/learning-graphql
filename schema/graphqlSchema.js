@@ -6,17 +6,18 @@ const typeDefs = `#graphql
 
     type Post {
         userId:ID
-        id:ID
+        _id:ID
         title:String
         body:String
     }
 
     type User {
-        id:ID
+        _id:ID
         name:String
         username:String
         email:String
         phone:String
+        password:String
         posts:[Post]
     }
 
@@ -25,6 +26,16 @@ const typeDefs = `#graphql
         username:String!
         email:String!
         phone:String!
+        password:String!
+    }
+
+    input userLoginInput {
+        email:String!
+        password:String!
+    }
+
+    type Token {
+        token:String
     }
 
     type Query {
@@ -36,7 +47,7 @@ const typeDefs = `#graphql
     }
 
     type Query {
-        post(id:ID!):Post
+        post(_id:ID!):Post
     }
 
     type Query {
@@ -48,7 +59,8 @@ const typeDefs = `#graphql
     }
 
     type Mutation {
-        addUser(newUser:userInput!):User
+        register(newUser:userInput!):User
+        login:(loginUser:userLoginInput!):Token
     }
 `;
 

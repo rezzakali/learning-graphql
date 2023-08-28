@@ -60,7 +60,7 @@ const typeDefs = `#graphql
 
     type Mutation {
         register(newUser:userInput!):User
-        login:(loginUser:userLoginInput!):Token
+        login(loginUser:userLoginInput!):Token
     }
 `;
 

@@ -1,13 +1,12 @@
 import JWT from 'jsonwebtoken';
-import { books, posts, users } from '../db/fakeDb.js';
 import { comparePassword, hashedPassword } from '../helpers/authHelpers.js';
+import postModel from '../models/postModel.js';
 import userModel from '../models/userModel.js';
 
 const resolvers = {
   Query: {
-    books: () => books,
-    posts: () => posts,
-    post: (_, { _id }) => posts.find((post) => post._id == _id),
+    posts: async () => await postModel.find(),
+    post: async (_, { _id }) => await postModel.findOne({ _id }),
     users: async () => {
       try {
         const users = await userModel.find();
@@ -16,11 +15,7 @@ const resolvers = {
         throw new Error('There was a server side error!');
       }
     },
-    user: (_, { email }) => users.find((user) => user.email == email),
-  },
-
-  User: {
-    posts: (user) => posts.filter((post) => post.userId == user._id),
+    user: async (_, { _id }) => await userModel.findOne({ _id }),
   },
 
   Mutation: {
@@ -70,6 +65,17 @@ const resolvers = {
         expiresIn: '7d',
       });
       return { token };
+    },
+
+    // create a post
+    createPost: async (_, { addPost }, { _id }) => {
+      if (!_id) throw new Error('Not Logged In!');
+      const newPost = new postModel({
+        userId: _id,
+        ...addPost,
+      });
+      await newPost.save();
+      return 'You have successfully created a post!';
     },
   },
 };

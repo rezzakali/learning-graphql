@@ -34,6 +34,11 @@ const typeDefs = `#graphql
         password:String!
     }
 
+    input postInput{
+        title:String!
+        body:String!
+    }
+
     type Token {
         token:String
     }
@@ -55,12 +60,13 @@ const typeDefs = `#graphql
     }
 
     type Query {
-        user(email:String!):User
+        user(_id:ID!):User
     }
 
     type Mutation {
         register(newUser:userInput!):User
         login(loginUser:userLoginInput!):Token
+        createPost(addPost:postInput!):String
     }
 `;
 

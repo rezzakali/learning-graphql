@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
 
 const postSchema = new Schema({
-  userId: {
+  user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
@@ -17,6 +17,6 @@ const postSchema = new Schema({
   },
 });
 
-const postModel = model('Post', postSchema);
+const Post = model('Post', postSchema);
 
-export default postModel;
+export default Post;

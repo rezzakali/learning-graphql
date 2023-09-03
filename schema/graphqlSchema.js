@@ -1,14 +1,46 @@
 const typeDefs = `#graphql
-    type Book {
+   
+   type Query {
+        posts:[Post]
+        post(_id:ID!):Post
+        users:[User]
+        user(_id:ID!):User
+    }
+
+    type deletePost {
+        success:Boolean
+        message:String
+    }
+
+    input updateInput {
         title:String
-        author:String
+        body:String
+    }
+
+    type updatePost {
+        success:Boolean
+        message:String
+        new:Post
+    }
+
+    type Mutation {
+        register(newUser:userInput!):User
+        login(loginUser:userLoginInput!):Token
+        createPost(addPost:postInput!):String
+        deletePost(_id:ID!):deletePost
+        updatePost(_id:ID!,value:updateInput!):updatePost
     }
 
     type Post {
-        userId:ID
+        user:userType
         _id:ID
         title:String
         body:String
+    }
+
+    type userType {
+        name:String
+        email:String
     }
 
     type User {
@@ -41,32 +73,6 @@ const typeDefs = `#graphql
 
     type Token {
         token:String
-    }
-
-    type Query {
-        books:[Book]
-    }
-
-    type Query {
-        posts:[Post]
-    }
-
-    type Query {
-        post(_id:ID!):Post
-    }
-
-    type Query {
-        users:[User]
-    }
-
-    type Query {
-        user(_id:ID!):User
-    }
-
-    type Mutation {
-        register(newUser:userInput!):User
-        login(loginUser:userLoginInput!):Token
-        createPost(addPost:postInput!):String
     }
 `;
 

@@ -1,21 +1,31 @@
+import { GraphQLError } from 'graphql';
 import JWT from 'jsonwebtoken';
 import { comparePassword, hashedPassword } from '../helpers/authHelpers.js';
-import postModel from '../models/postModel.js';
-import userModel from '../models/userModel.js';
+import Post from '../models/postModel.js';
+import User from '../models/userModel.js';
 
 const resolvers = {
   Query: {
-    posts: async () => await postModel.find(),
-    post: async (_, { _id }) => await postModel.findOne({ _id }),
+    posts: async () => {
+      try {
+        const posts = await Post.find({}).populate('user', 'name email').exec();
+        return posts;
+      } catch (error) {
+        console.log(error);
+        throw new GraphQLError('There was a server side error!');
+      }
+    },
+    post: async (_, { _id }) => await Post.findOne({ _id }),
+
     users: async () => {
       try {
-        const users = await userModel.find();
+        const users = await User.find();
         return users;
       } catch (error) {
         throw new Error('There was a server side error!');
       }
     },
-    user: async (_, { _id }) => await userModel.findOne({ _id }),
+    user: async (_, { _id }) => await User.findOne({ _id }),
   },
 
   Mutation: {
@@ -24,7 +34,7 @@ const resolvers = {
       const { email, password } = newUser;
 
       //  check if user already exist or not
-      const isUserExist = await userModel.findOne({ email });
+      const isUserExist = await User.findOne({ email });
 
       // if exists throw new error
       if (isUserExist) {
@@ -35,7 +45,7 @@ const resolvers = {
       const hashingPassword = await hashedPassword(password);
 
       // new user
-      const user = new userModel({
+      const user = new User({
         ...newUser,
         password: hashingPassword,
       });
@@ -47,7 +57,7 @@ const resolvers = {
     login: async (_, { loginUser }) => {
       const { email, password } = loginUser;
 
-      const user = await userModel.findOne({ email });
+      const user = await User.findOne({ email });
 
       if (!user) {
         throw new Error(`User doe's not exists!`);
@@ -70,12 +80,42 @@ const resolvers = {
     // create a post
     createPost: async (_, { addPost }, { _id }) => {
       if (!_id) throw new Error('Not Logged In!');
-      const newPost = new postModel({
+      const newPost = new Post({
         userId: _id,
         ...addPost,
       });
       await newPost.save();
       return 'You have successfully created a post!';
+    },
+
+    // delete a post
+    deletePost: async (_, { _id }) => {
+      try {
+        await Post.findByIdAndDelete({ _id });
+        return {
+          success: true,
+          message: 'Post deleted successfully!',
+        };
+      } catch (error) {
+        throw new GraphQLError(error);
+      }
+    },
+    // update a post
+    updatePost: async (_, { value, _id }) => {
+      try {
+        const res = await Post.findByIdAndUpdate(
+          { _id },
+          { $set: value },
+          { new: true }
+        );
+        return {
+          success: true,
+          message: 'Post updated successfully!',
+          new: res,
+        };
+      } catch (error) {
+        throw new GraphQLError(error);
+      }
     },
   },
 };

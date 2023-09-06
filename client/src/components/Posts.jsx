@@ -6,20 +6,26 @@ const Posts = () => {
   const [posts, setPosts] = useState([]);
 
   const fetchPosts = async () => {
-    const posts = await axios.get('http://localhost:4000/', {
-      query: `query getPosts {
-        posts {
-          _id
-          title
-          body
-          user {
-            name
-            email
-          }
-        }
-      }`,
-    });
-    console.log(posts);
+    try {
+      const response = await axios.post(import.meta.VITE_BASE_URL, {
+        query: `
+          query getPosts {
+            posts {
+              _id
+              title
+              body
+              user {
+                name
+                email
+              }
+            }
+          }`,
+      });
+
+      console.log(response.data); // Assuming the data is in response.data
+    } catch (error) {
+      console.error('Request failed:', error);
+    }
   };
 
   useEffect(() => {

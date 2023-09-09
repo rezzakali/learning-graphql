@@ -1,6 +1,8 @@
+import { useMutation } from '@apollo/client';
 import { Button, Card, Input, Typography } from '@material-tailwind/react';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { REGISTER } from '../gqlOperations/queries';
 
 const Register = () => {
   const [user, setUser] = useState({});
@@ -13,10 +15,26 @@ const Register = () => {
     });
   };
 
+  const navigate = useNavigate();
+
+  const [register, { data, loading, error }] = useMutation(REGISTER);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(user);
+    register({
+      variables: {
+        newUser: user,
+      },
+    });
   };
+
+  useEffect(() => {
+    if (data && data.register?.success) {
+      setTimeout(() => {
+        navigate('/login');
+      }, 1000);
+    }
+  }, [data]);
 
   return (
     <div className="flex items-center justify-center h-screen my-5">
@@ -67,8 +85,16 @@ const Register = () => {
               onChange={(e) => handleChange(e)}
             />
           </div>
+          {error && (
+            <Typography className="text-red-400">{error?.message}</Typography>
+          )}
+          {data && (
+            <Typography className="text-green-400">
+              Register successfully!
+            </Typography>
+          )}
           <Button className="mt-6" fullWidth type="submit">
-            Register
+            {loading ? 'Loading...' : 'Register'}
           </Button>
           <Typography color="gray" className="mt-4 text-center font-normal">
             Already have an account?{' '}

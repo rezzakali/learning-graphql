@@ -1,9 +1,13 @@
+import { useMutation } from '@apollo/client';
 import { Button, Card, Input, Typography } from '@material-tailwind/react';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { LOGIN } from '../gqlOperations/queries';
 
 const Login = () => {
   const [user, setUser] = useState({});
+
+  const [login, { data, loading, error }] = useMutation(LOGIN);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -13,10 +17,25 @@ const Login = () => {
     });
   };
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(user);
+    login({
+      variables: {
+        loginUser: user,
+      },
+    });
   };
+
+  useEffect(() => {
+    if (data && data.login) {
+      localStorage.setItem('token', data.login.token);
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+    }
+  }, [data]);
 
   return (
     <div className="flex items-center justify-center h-screen my-5">
@@ -39,8 +58,11 @@ const Login = () => {
               onChange={(e) => handleChange(e)}
             />
           </div>
+          {error && (
+            <Typography className="text-red-400">{error?.message}</Typography>
+          )}
           <Button className="mt-6" fullWidth type="submit">
-            Sign In
+            {loading ? 'Loading...' : 'Sign In'}
           </Button>
           <Typography color="gray" className="mt-4 text-center font-normal">
             Don't have an account?{' '}

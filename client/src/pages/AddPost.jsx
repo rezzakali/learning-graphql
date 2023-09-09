@@ -1,8 +1,18 @@
-import { Button, Card, Input, Textarea } from '@material-tailwind/react';
+import { useMutation } from '@apollo/client';
+import {
+  Button,
+  Card,
+  Input,
+  Textarea,
+  Typography,
+} from '@material-tailwind/react';
 import React, { useState } from 'react';
+import { CREATE_POST } from '../gqlOperations/queries';
 
 const AddPost = () => {
   const [post, setPost] = useState({});
+
+  const [createPost, { data, loading, error }] = useMutation(CREATE_POST);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,7 +24,11 @@ const AddPost = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(post);
+    createPost({
+      variables: {
+        addPost: post,
+      },
+    });
   };
 
   return (
@@ -37,8 +51,17 @@ const AddPost = () => {
               onChange={(e) => handleChange(e)}
             />
           </div>
-          <Button className="mt-6" fullWidth type="submit">
-            Sign In
+          {error && (
+            <Typography className="text-red-400">{error.message}</Typography>
+          )}
+          {data && (
+            <Typography className="text-green-400">
+              {data.createPost}
+            </Typography>
+          )}
+
+          <Button className="mt-6" fullWidth type="submit" disabled={loading}>
+            {loading ? 'Loading' : 'Add Post'}
           </Button>
         </form>
       </Card>

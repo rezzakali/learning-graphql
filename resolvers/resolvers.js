@@ -25,7 +25,22 @@ const resolvers = {
         throw new Error('There was a server side error!');
       }
     },
-    user: async (_, { _id }) => await User.findOne({ _id }),
+    user: async (_, { _id }) => {
+      try {
+        const user = await User.findOne({ _id });
+        const posts = await Post.find({ user: _id });
+
+        if (!user) {
+          throw new Error('User not found');
+        }
+        return {
+          user,
+          posts,
+        };
+      } catch (error) {
+        throw new Error('Error fetching user');
+      }
+    },
   },
 
   Mutation: {
@@ -50,7 +65,10 @@ const resolvers = {
         password: hashingPassword,
       });
 
-      return await user.save();
+      await user.save();
+      return {
+        success: true,
+      };
     },
 
     // login
@@ -81,7 +99,7 @@ const resolvers = {
     createPost: async (_, { addPost }, { _id }) => {
       if (!_id) throw new Error('Not Logged In!');
       const newPost = new Post({
-        userId: _id,
+        user: _id,
         ...addPost,
       });
       await newPost.save();

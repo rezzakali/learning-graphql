@@ -4,6 +4,13 @@ import jwt from 'jsonwebtoken';
 const authMiddleware = ({ req }) => {
   const token = req.headers.authorization || '';
 
+  if (
+    req.body.operationName === 'Register' ||
+    req.body.operationName === 'loginUser'
+  ) {
+    return {};
+  }
+
   if (!token) {
     throw new GraphQLError('User is not authenticated', {
       extensions: {

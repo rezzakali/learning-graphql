@@ -1,12 +1,13 @@
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import {
+  Button,
   Collapse,
   IconButton,
   Navbar as MTNavbar,
   Typography,
 } from '@material-tailwind/react';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function NavList() {
   const accessToken = localStorage.getItem('token');
@@ -90,8 +91,15 @@ const Navbar = () => {
     };
   }, []);
 
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
-    <MTNavbar className="mx-auto py-3 sticky top-0 z-50">
+    <MTNavbar className="sticky top-0 z-50 w-full py-2 shadow mx-auto">
       <div className="flex items-center justify-between text-blue-gray-900">
         <Typography variant="h6" className="mr-4 cursor-pointer py-1.5">
           <Link to="/">GraphQL</Link>
@@ -99,6 +107,9 @@ const Navbar = () => {
         <div className="hidden lg:block">
           <NavList />
         </div>
+        <Button size="sm" onClick={handleLogout}>
+          Logout
+        </Button>
         <IconButton
           variant="text"
           className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"

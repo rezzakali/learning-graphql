@@ -1,43 +1,21 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useQuery } from '@apollo/client';
+import { Typography } from '@material-tailwind/react';
+import React from 'react';
+import { GET_POSTS } from '../gqlOperations/queries';
 import Post from './Post';
 
 const Posts = () => {
-  const [posts, setPosts] = useState([]);
-
-  const fetchPosts = async () => {
-    try {
-      const response = await axios.post(import.meta.VITE_BASE_URL, {
-        query: `
-          query getPosts {
-            posts {
-              _id
-              title
-              body
-              user {
-                name
-                email
-              }
-            }
-          }`,
-      });
-
-      console.log(response.data); // Assuming the data is in response.data
-    } catch (error) {
-      console.error('Request failed:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  const { loading, error, data } = useQuery(GET_POSTS);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <Post />
-      <Post />
-      <Post />
-      <Post />
+      {loading && <Typography>Loading...</Typography>}
+      {!loading && data?.posts?.length <= 0 && (
+        <Typography>No Posts Found!</Typography>
+      )}
+      {!loading &&
+        !error &&
+        data?.posts?.map((post, index) => <Post key={index} post={post} />)}
     </div>
   );
 };

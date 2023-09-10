@@ -1,0 +1,64 @@
+query getUsers {
+  users {
+    _id
+    email
+    name
+    phone
+    username
+    posts {
+      _id
+    }
+  }
+}
+*******************
+query getUser($id: ID!) {
+  user(_id: $id) {
+    email
+    name
+    phone
+    username
+  }
+}
+ *****************
+query getPosts {
+  posts {
+    _id
+    title
+    body
+    user {
+      name
+      email
+    }
+  }
+}
+
+**********************
+query getPost($id: ID!) {
+  post(_id: $id) {
+    title
+    body
+   user {
+     name
+   }
+  }
+}
+*************************
+mutation deletePost($id: ID!) {
+  deletePost(_id: $id) {
+    success
+    message
+  }
+}
+
+******************************
+mutation updatePost($id: ID!, $value: updateInput!) {
+  updatePost(_id: $id, value: $value) {
+    success
+    message
+    new {
+      _id
+      title
+      body
+    }
+  }
+}

@@ -45,13 +45,29 @@ export const USER_WITH_POSTS = gql`
         name
         email
         phone
-        password
       }
       posts {
         _id
         title
         body
       }
+    }
+  }
+`;
+
+export const UPDATE_POST = gql`
+  mutation Mutation($id: ID!, $value: updateInput!) {
+    updatePost(_id: $id, value: $value) {
+      message
+    }
+  }
+`;
+
+export const DELETE_POST = gql`
+  mutation Mutation($id: ID!) {
+    deletePost(_id: $id) {
+      message
+      success
     }
   }
 `;
